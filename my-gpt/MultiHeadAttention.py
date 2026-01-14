@@ -1,3 +1,7 @@
+import torch
+import torch.nn as nn
+import math
+
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_model: int, num_heads: int):
         super().__init__()
@@ -58,7 +62,18 @@ class MultiHeadAttention(nn.Module):
 
         # Concatenate heads
         out = out.transpose(1, 2).contiguous()
-        batch_size, seq_len, _, = out.size()
-        out = out.view(batch_size, seq_len, self.d_model)
+        batch_size, seq_len, num_heads, d_head = out.size()
+        out = out.view(batch_size, seq_len, num_heads * d_head)
+
 
         return self.W_o(out)
+
+mha = MultiHeadAttention(d_model=64, num_heads=8)
+
+# Example input: batch of 2 sequences, each of length 5, embedding size 64
+x = torch.randn(2, 5, 64)  # (batch, seq_len, d_model)
+
+# Forward pass
+out = mha(x)
+
+print("Output shape:", out.shape)

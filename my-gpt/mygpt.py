@@ -48,10 +48,14 @@ def encode(s):
       l.append(stoi[ch])
     return l
 
-def decode(l):
-    s = "";
-    for num in l:
-      s = s + itos[num]
+def decode(nums):
+    # nums: Tensor of shape (T,) or list of ints
+    if isinstance(nums, torch.Tensor):
+        nums = nums.tolist()
+
+    s = ""
+    for num in nums:
+        s += itos[int(num)]
     return s
 
 data = torch.tensor(encode(text), dtype=torch.long)
@@ -132,4 +136,4 @@ for iter in range(max_iters):
 
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
 out = m.generate(context, maxNewTokens=500)
-print(decode(out)[0].tolist())
+print(decode(out[0]))
